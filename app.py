@@ -134,6 +134,11 @@ CLAUDE_MD = Path.home() / ".claude" / "CLAUDE.md"
 _MARKER_START = "<!-- claude-switcher:api-key-mode:start -->"
 _MARKER_END   = "<!-- claude-switcher:api-key-mode:end -->"
 
+ANTIGRAVITY_AGENTS_DIR = Path.home() / ".gemini" / "config" / "agents"
+ANTIGRAVITY_AGENTS_MD = ANTIGRAVITY_AGENTS_DIR / "AGENTS.md"
+_AGY_MARKER_START = "<!-- claude-switcher:start -->"
+_AGY_MARKER_END   = "<!-- claude-switcher:end -->"
+
 
 def _build_claude_md_section(cli_path: str) -> str:
     return f"""
@@ -177,6 +182,43 @@ def _remove_claude_md() -> None:
     if start == -1 or end == -1:
         return
     CLAUDE_MD.write_text(text[:start].rstrip() + "\n" + text[end + len(_MARKER_END):].lstrip("\n"), encoding="utf-8")
+
+
+def _build_antigravity_md_section(cli_path: str) -> str:
+    return f"""
+{_AGY_MARKER_START}
+## 6. Claude Code Auth Switcher (Claude_Switcher)
+- The user has a utility tool called **Claude Switcher** (located in `{Path(__file__).parent.resolve()}`) to switch the global `claude` CLI between **API Key mode** and **OAuth/Subscription mode**.
+- The global `claude` command path on this Windows system is: `{cli_path}`. It has been added to the user's system `PATH`.
+- When using `claude` in non-interactive tasks, prefer `claude -p "<prompt>"` for direct execution.
+{_AGY_MARKER_END}"""
+
+
+def _inject_antigravity_md(cli_path: str) -> None:
+    if not ANTIGRAVITY_AGENTS_DIR.exists():
+        return
+    text = ANTIGRAVITY_AGENTS_MD.read_text(encoding="utf-8") if ANTIGRAVITY_AGENTS_MD.exists() else ""
+    if _AGY_MARKER_START in text:
+        # Update path if it changed
+        start = text.find(_AGY_MARKER_START)
+        end = text.find(_AGY_MARKER_END)
+        if start != -1 and end != -1:
+            new_text = text[:start] + _build_antigravity_md_section(cli_path) + text[end + len(_AGY_MARKER_END):]
+            ANTIGRAVITY_AGENTS_MD.write_text(new_text, encoding="utf-8")
+        return
+    ANTIGRAVITY_AGENTS_MD.write_text(text + "\n" + _build_antigravity_md_section(cli_path), encoding="utf-8")
+
+
+def _remove_antigravity_md() -> None:
+    if not ANTIGRAVITY_AGENTS_MD.exists():
+        return
+    text = ANTIGRAVITY_AGENTS_MD.read_text(encoding="utf-8")
+    start = text.find(_AGY_MARKER_START)
+    end   = text.find(_AGY_MARKER_END)
+    if start == -1 or end == -1:
+        return
+    ANTIGRAVITY_AGENTS_MD.write_text(text[:start].rstrip() + "\n" + text[end + len(_AGY_MARKER_END):].lstrip("\n"), encoding="utf-8")
+
 
 
 def kill_claude() -> None:
@@ -373,7 +415,9 @@ class MainScreen(Screen):
                 return
             set_api_key(key)
             kill_claude()
-            _inject_claude_md(find_claude_cli())
+            cli_path = find_claude_cli()
+            _inject_claude_md(cli_path)
+            _inject_antigravity_md(cli_path)
             self.query_one("#status", Static).update("Mode: API Key (pay-per-use)")
             self.notify("API Key active — Claude CLI will use pay-per-use billing", timeout=8)
             asyncio.ensure_future(self._do_api_check())
@@ -384,7 +428,9 @@ class MainScreen(Screen):
             delete_api_key()
             kill_claude()
             _remove_claude_md()
+            _remove_antigravity_md()
             self.query_one("#status", Static).update("Mode: Subscription / OAuth")
+
             self.notify("Switched to Subscription — Claude CLI will use OAuth billing", timeout=8)
         elif bid == "session_log":
             self._refresh_table()
