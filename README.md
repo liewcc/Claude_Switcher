@@ -1,6 +1,5 @@
 # Claude Switcher (Claude Code Auth Switcher)
 
-[![GitHub License](https://img.shields.io/github/license/liewcc/Claude_Switcher)](LICENSE)
 [![GitHub Stars](https://img.shields.io/github/stars/liewcc/Claude_Switcher)](https://github.com/liewcc/Claude_Switcher/stargazers)
 
 A minimal Windows TUI (Terminal User Interface) tool to instantly toggle the **Claude Code CLI** between **API Key mode** (pay-per-use billing) and **Subscription / OAuth mode** (Claude Pro membership), with automatic API cost and token tracking.
