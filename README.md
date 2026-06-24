@@ -25,7 +25,7 @@ Switching between these modes on Windows manually requires you to:
 
 ## 📸 Interface Preview
 
-![TUI Dark Preview](img/preview.png)
+![TUI Dark Preview](img/p01.png)
 *(Sleek TUI interface running in Windows Terminal, featuring interactive buttons and live API connectivity diagnostics)*
 
 ---
