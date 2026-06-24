@@ -63,6 +63,9 @@ Double-click **`setup.bat`** in the project folder. This will automatically:
 ### Step 2: Launch the Switcher
 Double-click **`run.bat`** to start the TUI application.
 
+> [!TIP]
+> During the first-time setup (or by clicking **`Edit API Key`** later), you can click the **`Create Desktop Shortcut`** button. This creates a Windows desktop shortcut so you can launch the switcher directly from your desktop in the future.
+
 ### Step 3: Configure & Toggle
 1. **Enter API Key**: Click **`Edit API Key`**, input your Anthropic API Key, and save (stored locally in `config.json`, which is excluded from git).
 2. **Switch to API Billing**: Click **`Login (API Key mode)`**. This will configure environment variables and inject instructions to delegate tasks to the CLI.
