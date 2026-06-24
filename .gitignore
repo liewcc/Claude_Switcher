@@ -2,3 +2,6 @@ config.json
 __pycache__/
 *.pyc
 *.pyo
+usage_history.json
+usage_latest.json
+hook_dump.jsonl
